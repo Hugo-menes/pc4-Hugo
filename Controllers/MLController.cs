@@ -53,8 +53,37 @@ namespace pc4_ml.Controllers
                 ratings.Add((producto.ProductoId, normalizedscore));
             }
             ViewData["ratings"] = ratings;
-            ViewData["trendingproductos"] = _productoService.getAllProductos();
+            ViewData["productos"] = _productoService.getAllProductos();
             return View("Index");
+        }
+        public IActionResult Trending()
+        {
+            return View();
+        }
+
+        public IActionResult PredictTop3(int id)
+        {
+            List<(int productoId, float normalizedScore)> ratings = new List<(int productoId, float normalizedScore)>();
+            ProductoRatingPrediction prediction = null;
+
+            foreach (var producto in _productoService.getTrendingProductos())
+            {
+                // Call the Rating Prediction for each movie prediction
+                prediction = _model.Predict(new ProductoRating
+                {
+                    userid = id,
+                    productoid = producto.ProductoId // Asegúrate de que coincide con el nombre de la propiedad en ProductoRating
+                });
+
+                // Normalize the prediction scores for the "ratings" b/w 0 - 100
+                float normalizedscore = Sigmoid(prediction.Score);
+
+                // Add the score for recommendation of each movie in the trending movie list
+                ratings.Add((producto.ProductoId, normalizedscore));
+            }
+            ViewData["ratings"] = ratings;
+            ViewData["trendingproductos"] = _productoService.getTrendingProductos();
+            return View("Trending");
         }
 
         public float Sigmoid(float x)

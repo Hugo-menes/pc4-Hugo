@@ -1,12 +1,12 @@
 @{
-    ViewData["Title"] = "Análisis de Recomendaciones";
+    ViewData["Title"] = "Análisis de Recomendaciones para 3 Platos Top";
     var ratings = ViewData["ratings"] as List<(int productoId, float normalizedScore)>;
-    var productos = ViewData["productos"] as List<pc4_ml.Models.Producto>;
+    var trendingProductos = ViewData["trendingproductos"] as List<pc4_ml.Models.Producto>;
 }
 
 <h1>@ViewData["Title"]</h1>
 
-<form asp-controller="ML" asp-action="Predict" method="post">
+<form asp-controller="ML" asp-action="PredictTop3" method="post">
     <div class="form-group">
         <label for="id">Escribe el Id del usuario</label>
         <input type="text" class="form-control" id="id" name="id" />
@@ -31,7 +31,7 @@
         <tbody>
             @foreach (var rating in sortedRatings)
             {
-                var producto = productos.FirstOrDefault(p => p.ProductoId == rating.productoId);
+                var producto = trendingProductos.FirstOrDefault(p => p.ProductoId == rating.productoId);
                 <tr>
                     <td>@rating.productoId</td>
                     <td>@producto?.ProductoNombre</td>
